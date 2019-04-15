@@ -26,6 +26,16 @@ export default class WebpackExtensionManifestPlugin {
                 json = this.options.config || {};
             }
 
+            if (Reflect.has(this.options.config, 'transform')) {
+                let fn = this.options.config.transform;
+
+                if (typeof fn !== 'function') {
+                    return callback(new Error('config.transform should be `function`.'));
+                }
+
+                json = fn(json, compilation);
+            }
+
             const jsonString = JSON.stringify(json, null, 2);
 
             compilation.assets['manifest.json'] = {
